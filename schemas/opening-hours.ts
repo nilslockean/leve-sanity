@@ -1,0 +1,155 @@
+import {defineField, defineType} from 'sanity'
+import {ClockIcon, CalendarIcon} from '@sanity/icons'
+import * as z from 'zod'
+
+function composeWeekdayField(name: string, title: string, day: number) {
+  return defineField({
+    name: name,
+    type: 'object',
+    title: title,
+    fields: [
+      {
+        name: 'time',
+        type: 'string',
+        title: 'Öppettider',
+        hidden: ({parent}) => parent?.closed,
+      },
+      {
+        name: 'closed',
+        type: 'boolean',
+        title: 'Stängt',
+        initialValue: false,
+      },
+      {
+        name: 'day',
+        type: 'number',
+        hidden: true,
+        readOnly: true,
+        initialValue: day,
+      },
+    ],
+  })
+}
+
+export default defineType({
+  name: 'opening-hours',
+  type: 'document',
+  title: 'Öppettider',
+  icon: ClockIcon,
+  fields: [
+    {
+      name: 'title',
+      type: 'string',
+      title: 'Titel*',
+      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: 'setId',
+      type: 'slug',
+      title: 'ID*',
+      validation: (Rule) => Rule.required(),
+    },
+    {
+      name: 'days',
+      type: 'object',
+      title: 'Veckodagar',
+      fields: [
+        composeWeekdayField('mon', 'Måndag', 1),
+        composeWeekdayField('tue', 'Tisdag', 2),
+        composeWeekdayField('wed', 'Onsdag', 3),
+        composeWeekdayField('thu', 'Torsdag', 4),
+        composeWeekdayField('fri', 'Fredag', 5),
+        composeWeekdayField('sat', 'Lördag', 6),
+        composeWeekdayField('sun', 'Söndag', 0),
+      ],
+    },
+    {
+      name: 'irregular',
+      type: 'array',
+      title: 'Avvikande öppettider',
+      of: [
+        {
+          type: 'object',
+          icon: CalendarIcon,
+          validation: (rule) =>
+            rule.custom((f, context) => {
+              const Field = z.object({_key: z.string(), date: z.iso.date()})
+              const parent = z.array(Field).safeParse(context.parent)
+              if (!parent.success) {
+                console.warn('Parent schema parse error:', parent.error)
+                return true
+              }
+
+              const field = Field.safeParse(f)
+              if (!field.success) {
+                console.warn('Field schema parse error', field.error)
+                return true
+              }
+
+              const isDouble = parent.data
+                .filter((item) => item._key !== field.data._key)
+                .map((item) => item.date)
+                .includes(field.data.date)
+
+              if (!isDouble) {
+                return true
+              }
+
+              return 'Detta datum har redan en avvikande öppettid'
+            }),
+          fields: [
+            {
+              name: 'date',
+              type: 'date',
+              title: 'Datum',
+              validation: (rule) => rule.required(),
+            },
+            {
+              name: 'closed',
+              type: 'boolean',
+              title: 'Stängt',
+              initialValue: false,
+            },
+            {
+              name: 'time',
+              type: 'string',
+              title: 'Öppettider',
+              hidden: ({parent}) => parent?.closed,
+            },
+            {
+              name: 'name',
+              type: 'string',
+              title: 'Anledning',
+            },
+          ],
+          preview: {
+            select: {
+              date: 'date',
+              name: 'name',
+              time: 'time',
+              closed: 'closed',
+            },
+            prepare(selection) {
+              return {
+                title: composeTitle(selection.date, selection.name),
+                subtitle: selection?.closed ? 'stängt' : selection?.time,
+              }
+            },
+          },
+        },
+      ],
+    },
+  ],
+})
+
+function composeTitle(date?: string, name?: string) {
+  if (!date) {
+    return 'Ange datum'
+  }
+
+  if (!name) {
+    return date
+  }
+
+  return `${date} (${name})`
+}

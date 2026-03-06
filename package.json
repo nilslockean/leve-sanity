@@ -10,11 +10,33 @@
     "type": "git",
     "url": "git+https://github.com/nilslockean/leve-sanity.git"
   },
-  "license": "ISC",
+  "license": "UNLICENSED",
   "author": "",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "sanity dev",
+    "start": "sanity start",
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "deploy-graphql": "sanity graphql deploy"
+  },
+  "devDependencies": {
+    "@sanity/eslint-config-studio": "^6.0.0",
+    "@types/react": "^19.2.14",
+    "@types/styled-components": "^5.1.36",
+    "eslint": "^9.39.3",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@sanity/icons": "^3.7.4",
+    "@sanity/locale-sv-se": "^1.2.29",
+    "@sanity/vision": "^5.13.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-is": "^19.2.4",
+    "sanity": "^5.13.0",
+    "styled-components": "^6.3.11"
   }
 }
