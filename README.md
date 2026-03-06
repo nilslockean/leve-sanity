@@ -11,6 +11,14 @@ The studio is hosted at [leve.sanity.studio](https://leve.sanity.studio) and man
 
 ---
 
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [Querying content](docs/querying.md) | GROQ primer, schema reference, and how to query from the Astro site |
+
+---
+
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) `v24.14.0` (see `.node-version`)
