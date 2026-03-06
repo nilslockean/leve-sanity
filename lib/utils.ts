@@ -1,31 +1,28 @@
 const currencyFormatter = new Intl.NumberFormat('sv-SE', {
   style: 'currency',
   currency: 'SEK',
+  maximumFractionDigits: 0,
 })
 
 export function formatVariants(variants?: {price: number}[]) {
-  const prices = variants?.map((v) => v.price || 0) || [0]
+  if (!variants || variants.length === 0) {
+    return formatPrice([0])
+  }
+
+  const prices = variants.map((v) => v.price || 0)
   return formatPrice(prices)
 }
 
 export function formatPrice(prices: number[]) {
-  // Remove invalid values
-  prices = prices.filter((price) => typeof price === 'number')
-
-  if (prices.length === 0) {
-    return currencyFormatter.format(0)
-  }
-
-  if (prices.length === 1) {
-    return currencyFormatter.format(prices[0])
-  }
-
   const minPrice = Math.min(...prices)
   const maxPrice = Math.max(...prices)
 
+  // The currency formatter likes the &nbsp; character. I don't.
+  const formattedPrice = currencyFormatter.format(minPrice).replace(/\u00A0/g, ' ')
+
   if (minPrice === maxPrice) {
-    return currencyFormatter.format(minPrice)
+    return formattedPrice
   }
 
-  return currencyFormatter.formatRange(minPrice, maxPrice)
+  return 'Från ' + formattedPrice
 }

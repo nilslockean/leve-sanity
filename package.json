@@ -15,22 +15,15 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "dev": "sanity dev",
-    "start": "sanity start",
     "build": "sanity build",
     "deploy": "sanity deploy",
-    "deploy-graphql": "sanity graphql deploy"
+    "deploy-graphql": "sanity graphql deploy",
+    "dev": "sanity dev",
+    "start": "sanity start",
+    "test": "vitest run",
+    "watch": "vitest"
   },
   "prettier": "@sanity/prettier-config",
-  "devDependencies": {
-    "@sanity/eslint-config-studio": "^6.0.0",
-    "@sanity/prettier-config": "^3.0.0",
-    "@types/react": "^19.2.14",
-    "@types/styled-components": "^5.1.36",
-    "eslint": "^9.39.3",
-    "prettier": "^3.8.1",
-    "typescript": "^5.9.3"
-  },
   "dependencies": {
     "@sanity/icons": "^3.7.4",
     "@sanity/locale-sv-se": "^1.2.29",
@@ -40,5 +33,16 @@
     "react-is": "^19.2.4",
     "sanity": "^5.13.0",
     "styled-components": "^6.3.11"
+  },
+  "devDependencies": {
+    "@sanity/eslint-config-studio": "^6.0.0",
+    "@sanity/prettier-config": "^3.0.0",
+    "@types/react": "^19.2.14",
+    "@types/styled-components": "^5.1.36",
+    "eslint": "^9.39.3",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.0.18"
   }
 }
