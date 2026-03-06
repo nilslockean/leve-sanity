@@ -1,0 +1,26 @@
+name: Deploy sanity studio
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+defaults:
+  run:
+    working-directory: packages/sanity
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    env:
+      SANITY_AUTH_TOKEN: ${{ secrets.SANITY_DEPLOY_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".node-version"
+          cache: "npm"
+      - name: Install dependencies
+        run: npm install
+      - name: Deploy Studio
+        run: npx sanity deploy
