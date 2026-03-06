@@ -21,8 +21,10 @@
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy"
   },
+  "prettier": "@sanity/prettier-config",
   "devDependencies": {
     "@sanity/eslint-config-studio": "^6.0.0",
+    "@sanity/prettier-config": "^3.0.0",
     "@types/react": "^19.2.14",
     "@types/styled-components": "^5.1.36",
     "eslint": "^9.39.3",
