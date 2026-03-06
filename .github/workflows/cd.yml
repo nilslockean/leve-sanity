@@ -19,5 +19,7 @@ jobs:
           cache: "npm"
       - name: Install dependencies
         run: npm install
+      - name: Run unit tests
+        run: npm test
       - name: Deploy Studio
         run: npx sanity deploy
