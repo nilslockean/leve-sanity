@@ -2,7 +2,7 @@
 
 Sanity Studio for [Bageri Leve](https://bagerileve.se).
 
-The studio is hosted at [leve.sanity.studio](https://leve.sanity.studio) and manages content for the bakery's website. It is configured with two workspaces:
+The studio is hosted at [leve.sanity.studio](https://leve.sanity.studio) and manages content for the bakery's website ([frontend repo here](https://github.com/nilslockean/leve-astro)). It is configured with two workspaces:
 
 | Workspace | Dataset | Base path |
 |-----------|---------|-----------|
