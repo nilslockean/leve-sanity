@@ -221,7 +221,7 @@ export default defineType({
       name: 'pickupDates',
       title: 'Begränsa datum för upphämtning',
       description:
-        'Ange datum som produkten kan hämtas. Om inget datum anges kan produkten hämtas under ordinarie öppettider, med minst två dagars framförhållning.',
+        'Ange specifika datum som produkten kan hämtas. OBS! Detta fält tar inte hänsyn till öppettiderna. Var noga med att inte lägga till en dag då bageriet har stängt.',
       type: 'array',
       of: [
         {
@@ -231,6 +231,18 @@ export default defineType({
           validation: (Rule) => Rule.required(),
         },
       ],
+    }),
+    defineField({
+      name: 'pickupDateRangeStart',
+      title: 'Startdatum för upphämtning',
+      description: 'Ange datum då upphämtning tidigast kan ske.',
+      type: 'date',
+    }),
+    defineField({
+      name: 'pickupDateRangeEnd',
+      title: 'Slutdatum för upphämtning',
+      description: 'Ange datum då upphämtning senast kan ske.',
+      type: 'date',
     }),
   ],
 })
