@@ -17,6 +17,12 @@ export default defineType({
       readOnly: true,
     }),
 
+    defineField({
+      name: 'idempotencyKey',
+      title: 'Unikt ID',
+      type: 'string',
+      readOnly: true,
+    }),
     // defineField({
     //   name: 'status',
     //   title: 'Status',
