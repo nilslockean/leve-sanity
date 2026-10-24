@@ -25,6 +25,7 @@
   },
   "prettier": "@sanity/prettier-config",
   "dependencies": {
+    "@sanity/dashboard": "^6.0.22",
     "@sanity/icons": "^3.7.4",
     "@sanity/locale-sv-se": "^1.2.29",
     "@sanity/vision": "^5.13.0",
