@@ -14,6 +14,7 @@ const ORDER_STATISTICS_QUERY = /* groq */ `
       "count": count(*[_type == "order"]),
       "revenue": coalesce(math::sum(*[_type == "order"].totals.total), 0)
     },
+    "firstOrderDate": *[_type == "order"] | order(_createdAt asc)[0]._createdAt,
     "thisMonth": {
       "count": count(*[_type == "order" && _createdAt >= $monthStart]),
       "revenue": coalesce(math::sum(*[_type == "order" && _createdAt >= $monthStart].totals.total), 0)
@@ -27,6 +28,7 @@ const ORDER_STATISTICS_QUERY = /* groq */ `
 
 type OrderStatistics = {
   allTime: {count: number; revenue: number}
+  firstOrderDate: string | null
   thisMonth: {count: number; revenue: number}
   thisYear: {count: number; revenue: number}
 }
@@ -66,9 +68,19 @@ function formatCurrency(value: number) {
   return formatPrice([value])
 }
 
-function Stat({label, value, detail}: {label: string; value: string; detail?: string}) {
+function Stat({
+  label,
+  value,
+  detail,
+  wide = false,
+}: {
+  label: string
+  value: string
+  detail?: string
+  wide?: boolean
+}) {
   return (
-    <Card border padding={4} radius={2}>
+    <Card border padding={4} radius={2} style={wide ? {gridColumn: 'span 2'} : undefined}>
       <Stack space={3}>
         <Text muted size={1} weight="semibold">
           {label}
@@ -90,6 +102,12 @@ export function OrderStatisticsWidget() {
   const client = useClient({apiVersion: API_VERSION})
   const [statistics, setStatistics] = useState<OrderStatistics | null>(null)
   const [error, setError] = useState<string | null>(null)
+
+  const firstOrderDetail = statistics?.firstOrderDate
+    ? `since ${new Intl.DateTimeFormat('sv-SE', {dateStyle: 'medium', timeZone: TIME_ZONE}).format(
+        new Date(statistics.firstOrderDate),
+      )}`
+    : 'No completed orders yet'
 
   useEffect(() => {
     const {year, month} = getStockholmDateParts()
@@ -116,12 +134,12 @@ export function OrderStatisticsWidget() {
           <Stat
             label="All-time revenue"
             value={formatCurrency(statistics.allTime.revenue)}
-            detail={`${statistics.allTime.count} completed orders`}
-          />
-          <Stat
-            label="Total orders"
-            value={String(statistics.allTime.count)}
-            detail="completed orders"
+            detail={
+              statistics.firstOrderDate
+                ? `${statistics.allTime.count} completed orders ${firstOrderDetail}`
+                : firstOrderDetail
+            }
+            wide
           />
           <Stat
             label="This month"
