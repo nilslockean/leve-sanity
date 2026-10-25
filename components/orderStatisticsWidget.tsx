@@ -68,6 +68,16 @@ function formatCurrency(value: number) {
   return formatPrice([value])
 }
 
+const currentMonth = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  timeZone: TIME_ZONE,
+}).format(new Date())
+
+const currentYear = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  timeZone: TIME_ZONE,
+}).format(new Date())
+
 function Stat({
   label,
   value,
@@ -144,12 +154,12 @@ export function OrderStatisticsWidget() {
           <Stat
             label="This month"
             value={formatCurrency(statistics.thisMonth.revenue)}
-            detail={`${statistics.thisMonth.count} completed orders`}
+            detail={`${statistics.thisMonth.count} completed orders so far in ${currentMonth}`}
           />
           <Stat
             label="This year"
             value={formatCurrency(statistics.thisYear.revenue)}
-            detail={`${statistics.thisYear.count} completed orders`}
+            detail={`${statistics.thisYear.count} completed orders so far in ${currentYear}`}
           />
         </Flex>
       ) : (
