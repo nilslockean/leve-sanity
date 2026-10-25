@@ -15,6 +15,7 @@ const ORDER_STATISTICS_QUERY = /* groq */ `
       "revenue": coalesce(math::sum(*[_type == "order"].totals.total), 0)
     },
     "firstOrderDate": *[_type == "order"] | order(_createdAt asc)[0]._createdAt,
+    "customerEmails": *[_type == "order" && defined(customer.email)].customer.email,
     "thisMonth": {
       "count": count(*[_type == "order" && _createdAt >= $monthStart]),
       "revenue": coalesce(math::sum(*[_type == "order" && _createdAt >= $monthStart].totals.total), 0)
@@ -28,9 +29,14 @@ const ORDER_STATISTICS_QUERY = /* groq */ `
 
 type OrderStatistics = {
   allTime: {count: number; revenue: number}
+  returningCustomers: number
   firstOrderDate: string | null
   thisMonth: {count: number; revenue: number}
   thisYear: {count: number; revenue: number}
+}
+
+type OrderStatisticsResponse = Omit<OrderStatistics, 'returningCustomers'> & {
+  customerEmails: (string | null)[]
 }
 
 function getStockholmDateParts() {
@@ -66,6 +72,21 @@ function getStockholmMidnightIso(year: number, month: number) {
 
 function formatCurrency(value: number) {
   return formatPrice([value])
+}
+
+function countReturningCustomers(emails: (string | null)[]) {
+  const orderCountByEmail = new Map<string, number>()
+
+  emails.forEach((email) => {
+    if (!email) return
+
+    const normalizedEmail = email.trim().toLowerCase()
+    if (!normalizedEmail) return
+
+    orderCountByEmail.set(normalizedEmail, (orderCountByEmail.get(normalizedEmail) ?? 0) + 1)
+  })
+
+  return [...orderCountByEmail.values()].filter((orderCount) => orderCount > 1).length
 }
 
 const currentMonth = new Intl.DateTimeFormat('en-US', {
@@ -123,11 +144,16 @@ export function OrderStatisticsWidget() {
     const {year, month} = getStockholmDateParts()
 
     client
-      .fetch<OrderStatistics>(ORDER_STATISTICS_QUERY, {
+      .fetch<OrderStatisticsResponse>(ORDER_STATISTICS_QUERY, {
         monthStart: getStockholmMidnightIso(year, month),
         yearStart: getStockholmMidnightIso(year, 1),
       })
-      .then(setStatistics)
+      .then((response) =>
+        setStatistics({
+          ...response,
+          returningCustomers: countReturningCustomers(response.customerEmails),
+        }),
+      )
       .catch(() => setError('Could not load order statistics.'))
   }, [client])
 
@@ -160,6 +186,11 @@ export function OrderStatisticsWidget() {
             label="This year"
             value={formatCurrency(statistics.thisYear.revenue)}
             detail={`${statistics.thisYear.count} completed orders so far in ${currentYear}`}
+          />
+          <Stat
+            label="Returning customers"
+            value={String(statistics.returningCustomers)}
+            detail="customers with 2+ completed orders"
           />
         </Flex>
       ) : (
