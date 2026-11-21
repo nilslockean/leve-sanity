@@ -15,9 +15,10 @@ export default defineType({
       images: 'images',
       variants: 'variants',
       maxQuantityPerOrder: 'maxQuantityPerOrder',
+      archived: 'archived',
     },
     prepare(selection) {
-      let title = selection.title
+      let title = selection.archived ? `[ARKIVERAD] ${selection.title}` : selection.title
       if (selection.maxQuantityPerOrder === 0) {
         title += ` (fullbokad)`
       }
@@ -204,6 +205,13 @@ export default defineType({
     }),
     // End content
 
+    defineField({
+      name: 'archived',
+      title: 'Arkiverad',
+      type: 'boolean',
+      description: 'Arkiverade produkter finns kvar i Sanity men döljs på hemsidan',
+      initialValue: false,
+    }),
     // Start max quantity per order
     defineField({
       name: 'maxQuantityPerOrder',
@@ -215,7 +223,6 @@ export default defineType({
         Rule.integer().min(0).warning('Använd 0 för fullbokad, tomt för obegränsat'),
     }),
     // End max quantity per order
-
     // Start pickp date limitation
     defineField({
       name: 'pickupDates',
