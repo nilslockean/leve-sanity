@@ -18,7 +18,7 @@ export default defineType({
       archived: 'archived',
     },
     prepare(selection) {
-      let title = selection.archived ? `[ARKIVERAD] ${selection.title}` : selection.title
+      let title = selection.title
       if (selection.maxQuantityPerOrder === 0) {
         title += ` (fullbokad)`
       }
@@ -29,7 +29,7 @@ export default defineType({
       return {
         title: title,
         icon: ComponentIcon,
-        subtitle: formatVariants(selection.variants),
+        subtitle: selection.archived ? 'Arkiverad' : formatVariants(selection.variants),
         media: selection.images?.[0],
       }
     },
@@ -209,7 +209,7 @@ export default defineType({
       name: 'archived',
       title: 'Arkiverad',
       type: 'boolean',
-      description: 'Arkiverade produkter finns kvar i Sanity men döljs på hemsidan',
+      description: 'Arkiverade produkter finns kvar i Sanity men döljs på hemsidan.',
       initialValue: false,
     }),
     // Start max quantity per order
