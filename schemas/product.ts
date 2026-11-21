@@ -172,6 +172,17 @@ export default defineType({
     }),
     // End images
 
+    // Start video
+    defineField({
+      name: 'video',
+      type: 'file',
+      title: 'Video',
+      options: {
+        accept: ['video/*'],
+      },
+    }),
+    // End video
+
     // Start content
     defineField({
       title: 'Produktbeskrivning',
