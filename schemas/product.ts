@@ -16,6 +16,7 @@ export default defineType({
       variants: 'variants',
       maxQuantityPerOrder: 'maxQuantityPerOrder',
       archived: 'archived',
+      external: 'external',
     },
     prepare(selection) {
       let title = selection.title
@@ -29,7 +30,11 @@ export default defineType({
       return {
         title: title,
         icon: ComponentIcon,
-        subtitle: selection.archived ? 'Arkiverad' : formatVariants(selection.variants),
+        subtitle: selection.external
+          ? 'Extern produkt'
+          : selection.archived
+            ? 'Arkiverad'
+            : formatVariants(selection.variants),
         media: selection.images?.[0],
       }
     },
@@ -51,11 +56,27 @@ export default defineType({
       validation: (Rule) => Rule.required(),
     }),
 
+    // Start external/internal
+    defineField({
+      name: 'external',
+      title: 'Extern produkt',
+      type: 'boolean',
+      initialValue: false,
+    }),
+
+    defineField({
+      name: 'externalUrl',
+      title: 'Länk till extern beställningssida',
+      type: 'url',
+      hidden: ({parent}) => parent?.external !== true,
+    }),
+
     // Start variants
     defineField({
       name: 'variants',
       type: 'array',
       title: 'Varianter',
+      hidden: ({parent}) => parent?.external === true,
       of: [
         {
           type: 'object',
