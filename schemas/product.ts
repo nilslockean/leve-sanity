@@ -1,4 +1,4 @@
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 import {ComponentIcon} from '@sanity/icons'
 import {BasketIcon} from '@sanity/icons'
 import {TagIcon} from '@sanity/icons'
@@ -233,6 +233,7 @@ export default defineType({
         {
           type: 'image',
         },
+        defineArrayMember({type: 'accordion'}),
       ],
     }),
     // End content
